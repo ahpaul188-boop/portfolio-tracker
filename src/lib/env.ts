@@ -23,10 +23,6 @@ export function getEnvStatus(): EnvStatus {
   const issues: string[] = [];
   const authSecret = process.env.AUTH_SECRET?.trim() ?? "";
   const databaseUrl = process.env.DATABASE_URL?.trim() ?? "";
-  const tursoUrl = process.env.TURSO_DATABASE_URL?.trim() ?? "";
-  const tursoToken = process.env.TURSO_AUTH_TOKEN?.trim() ?? "";
-  const hasDatabase =
-    !!databaseUrl || (!!tursoUrl && !!tursoToken);
   const googleOAuth =
     !!process.env.GOOGLE_CLIENT_ID?.trim() &&
     !!process.env.GOOGLE_CLIENT_SECRET?.trim();
@@ -35,17 +31,15 @@ export function getEnvStatus(): EnvStatus {
   if (!authSecret || authSecret === "change-me-to-a-random-secret") {
     issues.push("AUTH_SECRET is missing or still set to the example value");
   }
-  if (!hasDatabase) {
-    issues.push(
-      "DATABASE_URL or TURSO_DATABASE_URL + TURSO_AUTH_TOKEN is not set"
-    );
+  if (!databaseUrl) {
+    issues.push("DATABASE_URL is not set");
   }
 
   return {
     ok: issues.length === 0,
     issues,
     authSecret: !!authSecret && authSecret !== "change-me-to-a-random-secret",
-    databaseUrl: hasDatabase,
+    databaseUrl: !!databaseUrl,
     googleOAuth,
     openrouter,
     authUrl: getAuthUrl(),

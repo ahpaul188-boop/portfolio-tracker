@@ -22,100 +22,84 @@ Expected response when healthy:
 }
 ```
 
-## Vercel (recommended)
+## Vercel + Neon (recommended)
 
-### 1. Database
+No credit card required on Vercel Hobby or [Neon](https://neon.tech) free tier.
 
-The default **SQLite** file database works locally but **does not persist** on Vercel serverless functions.
+### 1. Database (Neon)
 
-For production, migrate to a hosted database:
-
-- [Turso](https://turso.tech) (SQLite-compatible) — use `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` (see below)
-- [Neon](https://neon.tech) or [Supabase](https://supabase.com) (Postgres) — update `prisma/schema.prisma` provider to `postgresql`
-
-Push the schema **once** from your machine (not during the Vercel build):
+1. Sign up at [neon.tech](https://neon.tech) (GitHub login)
+2. Create a project → copy **pooled** and **direct** connection strings
+3. Locally, set in `.env`:
+   - `DATABASE_URL` — pooled URL (`…-pooler…`)
+   - `DIRECT_URL` — direct URL (no `pooler` in hostname)
+4. Push schema once:
 
 ```bash
-# In .env set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN, then:
-npm run db:push:turso
+npm run db:push
 ```
 
-For Postgres (Neon/Supabase), change `provider` in `prisma/schema.prisma` to `postgresql`, then run the same command with your Postgres URL.
+### 2. Environment variables (Vercel)
 
-### 2. Environment variables
-
-Set these in **Vercel → Project → Settings → Environment Variables**:
+**Vercel → Project → Settings → Environment Variables:**
 
 | Variable | Required | Notes |
 |----------|----------|-------|
-| `TURSO_DATABASE_URL` | Yes (Vercel) | From Turso → your database → **Connect** (e.g. `libsql://your-db.aws-ap-northeast-1.turso.io`) |
-| `TURSO_AUTH_TOKEN` | Yes (Vercel) | From the same **Connect** dialog — database token, not org API token |
-| `DATABASE_URL` | Local only | `file:./dev.db` — **do not** set to `libsql://` on Vercel |
+| `DATABASE_URL` | Yes | Neon **pooled** connection string |
+| `DIRECT_URL` | Yes | Neon **direct** connection string |
 | `AUTH_SECRET` | Yes | `openssl rand -base64 32` |
 | `AUTH_URL` | Yes | `https://portfolio-tracker-iota-sable.vercel.app` |
-| `GOOGLE_CLIENT_ID` | Optional | Enables Google sign-in |
+| `GOOGLE_CLIENT_ID` | Optional | Google sign-in |
 | `GOOGLE_CLIENT_SECRET` | Optional | |
-| `OPENROUTER_API_KEY` | Optional | AI suggestions panel |
+| `OPENROUTER_API_KEY` | Optional | AI suggestions |
 | `OPENROUTER_MODEL` | Optional | Default: `inclusionai/ling-3.0-flash-fin:free` |
 | `OPENROUTER_FALLBACK_MODELS` | Optional | e.g. `minimax/minimax-m3:free` |
 
+Remove any old `TURSO_*` variables if present.
+
 ### 3. Google OAuth (production)
 
-1. [Google Cloud Console](https://console.cloud.google.com/apis/credentials) → your OAuth client
-2. Add **Authorized redirect URI**:
-   ```
-   https://your-domain.vercel.app/api/auth/callback/google
-   ```
-3. Set `AUTH_URL=https://your-domain.vercel.app` in Vercel env
-4. If the consent screen is in **Testing**, add each user's Gmail as a test user — or publish the app for public use
+1. [Google Cloud Console](https://console.cloud.google.com/apis/credentials) → OAuth client
+2. Add redirect URI: `https://your-domain.vercel.app/api/auth/callback/google`
+3. Set `AUTH_URL` to your Vercel URL
 
 ### 4. Deploy
 
+Connect GitHub repo in Vercel, or:
+
 ```bash
-npm i -g vercel
 vercel
 ```
 
-Or connect the GitHub repo in the Vercel dashboard. The build runs `prisma generate && next build` (see `package.json`). **Do not** run `prisma db push` on Vercel — apply schema changes locally against your hosted database instead.
+Build runs `prisma generate && next build`. Apply schema with `npm run db:push` locally — not during Vercel build.
 
 ### 5. Post-deploy
 
-- Open `/api/health` — confirm `status: ok` and `database: true`
-- Sign in and add a test holding
-- Export CSV from the dashboard header
-- Check portfolio performance chart loads
+- `/api/health` → `"database": true`
+- Sign in at `/login`
+- Add a test holding
 
 ### Troubleshooting
 
-**`SERVER_ERROR: HTTP status 401` in Vercel logs**
-
-Turso rejected the auth token. Create a token from **Databases → your DB → Connect** (not Organization → API Tokens). Update `TURSO_AUTH_TOKEN` on Vercel and redeploy.
-
-**`the URL must start with the protocol file:`**
-
-Remove `libsql://` from `DATABASE_URL` on Vercel. Use `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` instead; leave `DATABASE_URL` unset or as `file:./dev.db`.
-
 **Login page works but sign-in returns 500**
 
-Database is not connected. Run `npm run db:push:turso` locally after fixing the Turso token, then verify `/api/health` shows `"database": true`.
+Check Vercel logs for Prisma errors. Confirm `DATABASE_URL` and `DIRECT_URL` are set, then run `npm run db:push` locally.
 
-## Self-hosted (Node)
+**`can't reach this page` on vercel.app**
 
-```bash
-npm install
-cp .env.example .env
-# Edit .env — set AUTH_SECRET, DATABASE_URL, AUTH_URL
-npx prisma db push
-npm run build
-npm run start
-```
+Some HK ISPs block `*.vercel.app` DNS. Change PC DNS to `8.8.8.8` / `1.1.1.1`, or test on mobile data.
 
-Run behind a reverse proxy (nginx, Caddy) with HTTPS. Set `AUTH_URL` to your public URL.
+## Fly.io (alternative)
+
+See [docs/FLY.md](FLY.md) — requires a credit card on Fly.io even for free tier.
 
 ## Local development
 
 ```bash
+cp .env.example .env
+# Set DATABASE_URL, DIRECT_URL, AUTH_SECRET
+npm run db:push
 npm run dev
 ```
 
-Email login works without Google OAuth. Health endpoint: [http://localhost:3000/api/health](http://localhost:3000/api/health)
+Health: [http://localhost:3000/api/health](http://localhost:3000/api/health)
