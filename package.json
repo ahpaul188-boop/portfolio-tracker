@@ -2,6 +2,11 @@
   "name": "portfolio-tracker",
   "version": "0.1.0",
   "private": true,
+  "allowScripts": {
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "prisma@6.19.3": true
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
