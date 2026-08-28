@@ -33,11 +33,14 @@ For production, migrate to a hosted database:
 - [Turso](https://turso.tech) (SQLite-compatible) — change `DATABASE_URL` to `libsql://...`
 - [Neon](https://neon.tech) or [Supabase](https://supabase.com) (Postgres) — update `prisma/schema.prisma` provider to `postgresql`
 
-After changing the provider:
+Push the schema **once** from your machine (not during the Vercel build):
 
 ```bash
-npx prisma db push
+# In .env set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN, then:
+npm run db:push:turso
 ```
+
+For Postgres (Neon/Supabase), change `provider` in `prisma/schema.prisma` to `postgresql`, then run the same command with your Postgres URL.
 
 ### 2. Environment variables
 
@@ -45,7 +48,9 @@ Set these in **Vercel → Project → Settings → Environment Variables**:
 
 | Variable | Required | Notes |
 |----------|----------|-------|
-| `DATABASE_URL` | Yes | Hosted DB connection string |
+| `DATABASE_URL` | Yes (local) | `file:./dev.db` locally; optional on Vercel if Turso vars are set |
+| `TURSO_DATABASE_URL` | Yes (Vercel) | e.g. `libsql://your-db.turso.io` |
+| `TURSO_AUTH_TOKEN` | Yes (Vercel) | Turso dashboard → Database → Tokens |
 | `AUTH_SECRET` | Yes | `openssl rand -base64 32` |
 | `AUTH_URL` | Yes | `https://your-domain.vercel.app` |
 | `GOOGLE_CLIENT_ID` | Optional | Enables Google sign-in |
@@ -71,7 +76,7 @@ npm i -g vercel
 vercel
 ```
 
-Or connect the GitHub repo in the Vercel dashboard. The included `vercel.json` runs `prisma generate` and `prisma db push` during build.
+Or connect the GitHub repo in the Vercel dashboard. The build runs `prisma generate && next build` (see `package.json`). **Do not** run `prisma db push` on Vercel — apply schema changes locally against your hosted database instead.
 
 ### 5. Post-deploy
 
