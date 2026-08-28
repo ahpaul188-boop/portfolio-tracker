@@ -30,7 +30,7 @@ The default **SQLite** file database works locally but **does not persist** on V
 
 For production, migrate to a hosted database:
 
-- [Turso](https://turso.tech) (SQLite-compatible) — change `DATABASE_URL` to `libsql://...`
+- [Turso](https://turso.tech) (SQLite-compatible) — use `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` (see below)
 - [Neon](https://neon.tech) or [Supabase](https://supabase.com) (Postgres) — update `prisma/schema.prisma` provider to `postgresql`
 
 Push the schema **once** from your machine (not during the Vercel build):
@@ -48,9 +48,9 @@ Set these in **Vercel → Project → Settings → Environment Variables**:
 
 | Variable | Required | Notes |
 |----------|----------|-------|
-| `DATABASE_URL` | Yes (local) | `file:./dev.db` locally; optional on Vercel if Turso vars are set |
-| `TURSO_DATABASE_URL` | Yes (Vercel) | e.g. `libsql://your-db.turso.io` |
-| `TURSO_AUTH_TOKEN` | Yes (Vercel) | Turso dashboard → Database → Tokens |
+| `TURSO_DATABASE_URL` | Yes (Vercel) | From Turso → your database → **Connect** (e.g. `libsql://your-db.aws-ap-northeast-1.turso.io`) |
+| `TURSO_AUTH_TOKEN` | Yes (Vercel) | From the same **Connect** dialog — database token, not org API token |
+| `DATABASE_URL` | Local only | `file:./dev.db` — **do not** set to `libsql://` on Vercel |
 | `AUTH_SECRET` | Yes | `openssl rand -base64 32` |
 | `AUTH_URL` | Yes | `https://portfolio-tracker-iota-sable.vercel.app` |
 | `GOOGLE_CLIENT_ID` | Optional | Enables Google sign-in |
@@ -80,10 +80,24 @@ Or connect the GitHub repo in the Vercel dashboard. The build runs `prisma gener
 
 ### 5. Post-deploy
 
-- Open `/api/health` — confirm `status: ok`
+- Open `/api/health` — confirm `status: ok` and `database: true`
 - Sign in and add a test holding
 - Export CSV from the dashboard header
 - Check portfolio performance chart loads
+
+### Troubleshooting
+
+**`SERVER_ERROR: HTTP status 401` in Vercel logs**
+
+Turso rejected the auth token. Create a token from **Databases → your DB → Connect** (not Organization → API Tokens). Update `TURSO_AUTH_TOKEN` on Vercel and redeploy.
+
+**`the URL must start with the protocol file:`**
+
+Remove `libsql://` from `DATABASE_URL` on Vercel. Use `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` instead; leave `DATABASE_URL` unset or as `file:./dev.db`.
+
+**Login page works but sign-in returns 500**
+
+Database is not connected. Run `npm run db:push:turso` locally after fixing the Turso token, then verify `/api/health` shows `"database": true`.
 
 ## Self-hosted (Node)
 

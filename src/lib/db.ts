@@ -26,6 +26,10 @@ function createPrismaClient(): PrismaClient {
 
   const turso = getTursoConfig();
   if (turso) {
+    // Prisma sqlite provider validates DATABASE_URL as file: — Turso uses the adapter.
+    if (!process.env.DATABASE_URL?.trim().startsWith("file:")) {
+      process.env.DATABASE_URL = "file:./dev.db";
+    }
     const adapter = new PrismaLibSql({
       url: turso.url,
       authToken: turso.authToken,
