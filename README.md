@@ -104,7 +104,7 @@ OPENROUTER_FALLBACK_MODELS="minimax/minimax-m3:free"
 
 ## Deployment
 
-See [docs/DEPLOY.md](docs/DEPLOY.md) for Vercel/self-hosted setup, production Google OAuth URIs, and database migration notes.
+See [docs/FLY.md](docs/FLY.md) for **Fly.io** (recommended — SQLite, no Turso) or [docs/DEPLOY.md](docs/DEPLOY.md) for Vercel.
 
 **Health check:** `GET /api/health` (public) — reports database and config status.
 

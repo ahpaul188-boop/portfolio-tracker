@@ -1,0 +1,32 @@
+# Fly.io — SQLite on a persistent volume (no Turso needed).
+# Docs: docs/FLY.md
+
+app = "portfolio-tracker"
+primary_region = "hkg"
+
+[build]
+
+[env]
+  DATABASE_URL = "file:/data/dev.db"
+  PORT = "3000"
+
+[mounts]
+  source = "data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 250
+    soft_limit = 200
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
