@@ -52,7 +52,7 @@ Set these in **Vercel → Project → Settings → Environment Variables**:
 | `TURSO_DATABASE_URL` | Yes (Vercel) | e.g. `libsql://your-db.turso.io` |
 | `TURSO_AUTH_TOKEN` | Yes (Vercel) | Turso dashboard → Database → Tokens |
 | `AUTH_SECRET` | Yes | `openssl rand -base64 32` |
-| `AUTH_URL` | Yes | `https://your-domain.vercel.app` |
+| `AUTH_URL` | Yes | `https://portfolio-tracker-iota-sable.vercel.app` |
 | `GOOGLE_CLIENT_ID` | Optional | Enables Google sign-in |
 | `GOOGLE_CLIENT_SECRET` | Optional | |
 | `OPENROUTER_API_KEY` | Optional | AI suggestions panel |

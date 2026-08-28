@@ -52,14 +52,11 @@ export function getEnvStatus(): EnvStatus {
   };
 }
 
-/** Warn in development; throw in production when critical vars are missing. */
+/** Log configuration issues at startup; /api/health reports degraded state. */
 export function validateEnvOnStartup(): void {
   const status = getEnvStatus();
   if (status.ok) return;
 
   const message = `Environment configuration issues:\n- ${status.issues.join("\n- ")}`;
-  if (process.env.NODE_ENV === "production") {
-    throw new Error(message);
-  }
-  console.warn(`[env] ${message}`);
+  console.error(`[env] ${message}`);
 }
