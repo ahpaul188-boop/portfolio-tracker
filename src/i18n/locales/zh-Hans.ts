@@ -223,6 +223,7 @@ export const zhHans: Messages = {
     addTitle: "新增持仓",
     editTitle: "编辑持仓",
     symbol: "代号 / 代码",
+    symbolLookupHint: "输入名称或代码，输入时会显示匹配的股票。",
     name: "名称",
     isin: "ISIN",
     shares: "股数",

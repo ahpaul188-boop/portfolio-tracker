@@ -223,6 +223,7 @@ export const zhHant: Messages = {
     addTitle: "新增持倉",
     editTitle: "編輯持倉",
     symbol: "代號 / 代碼",
+    symbolLookupHint: "輸入名稱或代碼，輸入時會顯示匹配的股票。",
     name: "名稱",
     isin: "ISIN",
     shares: "股數",

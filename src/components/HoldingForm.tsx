@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useI18n } from "@/components/LocaleProvider";
+import { SymbolSearchField } from "@/components/SymbolSearchField";
+import type { SearchHit } from "@/lib/quotes";
 import type { AssetType, HoldingInput, Market } from "@/lib/types";
 
 type Initial = Partial<HoldingInput> & { id?: string };
@@ -95,6 +97,17 @@ export function HoldingForm({
   function onMarketChange(m: Market) {
     setMarket(m);
     setCurrency(m === "HK" ? "HKD" : "USD");
+  }
+
+  function onSymbolSelect(hit: SearchHit) {
+    setSymbol(hit.symbol);
+    setName(hit.name);
+    setCurrency(hit.currency);
+    if (hit.isin) setIsin(hit.isin);
+    if (hit.market !== market) onMarketChange(hit.market);
+    if (hit.assetType === "Bond" || hit.assetType === "Stock") {
+      setAssetType(hit.assetType);
+    }
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -208,13 +221,30 @@ export function HoldingForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className={label}>{t("holdingForm.symbol")}</label>
-          <input
-            className={field}
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
-            required
-            placeholder={market === "HK" ? "0700" : "AAPL"}
-          />
+          {assetType === "Stock" ? (
+            <>
+              <SymbolSearchField
+                value={symbol}
+                onChange={setSymbol}
+                onSelect={onSymbolSelect}
+                market={market}
+                required
+                className={field}
+                placeholder={market === "HK" ? "0700" : "AAPL"}
+              />
+              <p className="mt-1 text-[11px] text-[var(--muted)]">
+                {t("holdingForm.symbolLookupHint")}
+              </p>
+            </>
+          ) : (
+            <input
+              className={field}
+              value={symbol}
+              onChange={(e) => setSymbol(e.target.value)}
+              required
+              placeholder={market === "HK" ? "0700" : "AAPL"}
+            />
+          )}
         </div>
         <div>
           <label className={label}>{t("holdingForm.name")}</label>

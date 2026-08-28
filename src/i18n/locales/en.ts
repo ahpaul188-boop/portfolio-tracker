@@ -226,6 +226,7 @@ export const en = {
     addTitle: "Add holding",
     editTitle: "Edit holding",
     symbol: "Symbol / code",
+    symbolLookupHint: "Type a name or ticker — matching stocks appear as you type.",
     name: "Name",
     isin: "ISIN",
     shares: "Shares",
