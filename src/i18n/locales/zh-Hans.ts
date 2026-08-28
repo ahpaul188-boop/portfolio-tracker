@@ -74,6 +74,8 @@ export const zhHans: Messages = {
     empty: "添加有实时报价的持仓以查看表现。",
     failed: "无法加载表现图表",
     approximate: "估算值：当前持股数 × 历史价格。债券使用手动标价。",
+    trades: "根据买卖记录计算各日持股数量。债券使用手动标价。",
+    snapshots: "结合每日投资组合快照与基于交易的估算。",
   },
   bondReminders: {
     title: "即将到期的债券事项",
@@ -108,6 +110,8 @@ export const zhHans: Messages = {
     triggeredTitle: "价格提醒已触发",
     invalidPrice: "请输入有效价格",
     saveFailed: "无法保存提醒",
+    notificationTitle: "价格提醒",
+    notificationBody: "{name}（{symbol}）{direction} {price}",
   },
   settings: {
     title: "设置",
@@ -121,10 +125,16 @@ export const zhHans: Messages = {
     saved: "设置已保存",
     saveFailed: "无法保存设置",
     loadFailed: "无法加载设置",
+    browserNotifyAlerts: "价格提醒浏览器通知",
+    browserNotifyHint: "应用打开时每分钟检查一次。请在提示时允许浏览器通知权限。",
+    browserNotifyDenied: "浏览器通知已被阻止",
+    browserNotifyUnsupported: "此浏览器不支持通知",
   },
   import: {
     title: "导入持仓",
     hint: "上传 CSV 批量新增持仓。已存在的代号会跳过。",
+    brokerLabel: "券商格式",
+    brokerHint: "选择券商导出格式，或选择 Generic 使用模板 CSV。",
     downloadTemplate: "下载 CSV 模板",
     fileLabel: "CSV 文件",
     upload: "导入",
@@ -280,6 +290,7 @@ export const zhHans: Messages = {
     errorAccessDenied:
       "Google 拒绝登录。若应用处于 Testing 模式，请在 OAuth 同意屏幕 → Test users 添加您的 Gmail。",
     errorCredentials: "邮箱无效。请输入有效地址（例如 you@gmail.com）。",
+    errorStaleSession: "数据库更新后您的会话已过期，请重新登录。",
     errorDefault: "登录失败（{code}）。请尝试以邮箱登录。",
   },
 };

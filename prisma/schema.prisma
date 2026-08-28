@@ -19,9 +19,10 @@ model User {
   sessions      Session[]
   holdings      Holding[]
   watchlist     WatchlistItem[]
-  preferences   UserPreferences?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  preferences        UserPreferences?
+  portfolioSnapshots PortfolioSnapshot[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 model Account {
@@ -87,13 +88,28 @@ model Holding {
 }
 
 model UserPreferences {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  displayCurrency String   @default("USD") // USD | HKD
-  openrouterModel String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayCurrency     String   @default("USD") // USD | HKD
+  openrouterModel     String?
+  browserNotifyAlerts Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model PortfolioSnapshot {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  currency  String
+  value     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date, currency])
+  @@index([userId, date])
 }
 
 model WatchlistItem {

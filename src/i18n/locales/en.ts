@@ -74,6 +74,10 @@ export const en = {
     failed: "Failed to load performance",
     approximate:
       "Approximate: current quantities × historical prices. Bond values use manual marks.",
+    trades:
+      "Uses your buy/sell history for share counts at each date. Bond values use manual marks.",
+    snapshots:
+      "Blends daily portfolio snapshots with trade-based estimates where available.",
   },
   bondReminders: {
     title: "Upcoming bond events",
@@ -108,6 +112,8 @@ export const en = {
     triggeredTitle: "Price alerts triggered",
     invalidPrice: "Enter a valid alert price",
     saveFailed: "Failed to save alert",
+    notificationTitle: "Price alert",
+    notificationBody: "{name} ({symbol}) is {direction} {price}",
   },
   settings: {
     title: "Settings",
@@ -121,10 +127,17 @@ export const en = {
     saved: "Settings saved",
     saveFailed: "Failed to save settings",
     loadFailed: "Failed to load settings",
+    browserNotifyAlerts: "Browser notifications for price alerts",
+    browserNotifyHint:
+      "Polls every minute while the app is open. Enable browser permission when prompted.",
+    browserNotifyDenied: "Browser notifications were blocked",
+    browserNotifyUnsupported: "This browser does not support notifications",
   },
   import: {
     title: "Import holdings",
     hint: "Upload a CSV file to bulk-add holdings. Existing symbols are skipped.",
+    brokerLabel: "Broker format",
+    brokerHint: "Choose your broker export format, or Generic for the template CSV.",
     downloadTemplate: "Download CSV template",
     fileLabel: "CSV file",
     upload: "Import",
@@ -284,6 +297,8 @@ export const en = {
       "Google blocked sign-in. Add your Gmail under OAuth consent screen → Test users (if app is in Testing mode).",
     errorCredentials:
       "Invalid email. Enter a valid address (e.g. you@gmail.com).",
+    errorStaleSession:
+      "Your session expired after a database update. Please sign in again.",
     errorDefault: "Sign-in failed ({code}). Try email sign-in below.",
   },
 } as const;

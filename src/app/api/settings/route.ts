@@ -26,6 +26,7 @@ export async function PATCH(request: Request) {
   const body = (await request.json()) as {
     displayCurrency?: string;
     openrouterModel?: string | null;
+    browserNotifyAlerts?: boolean;
   };
 
   const displayCurrency = body.displayCurrency
@@ -46,6 +47,7 @@ export async function PATCH(request: Request) {
   const prefs = await updateUserPreferences(userId, {
     displayCurrency,
     openrouterModel,
+    browserNotifyAlerts: body.browserNotifyAlerts,
   });
 
   return NextResponse.json(prefs);

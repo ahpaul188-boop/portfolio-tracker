@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useI18n } from "@/components/LocaleProvider";
+import { BROKER_OPTIONS, type BrokerId } from "@/lib/import-brokers";
 
 export function ImportForm() {
   const { t } = useI18n();
+  const [broker, setBroker] = useState<BrokerId>("generic");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{
     created: number;
@@ -20,6 +22,7 @@ export function ImportForm() {
     setResult(null);
     const form = e.currentTarget;
     const fd = new FormData(form);
+    fd.set("broker", broker);
     try {
       const res = await fetch("/api/import/holdings", {
         method: "POST",
@@ -41,6 +44,7 @@ export function ImportForm() {
       });
       if (data.created > 0) {
         form.reset();
+        setBroker("generic");
       }
     } catch {
       setError(t("common.networkError"));
@@ -64,6 +68,24 @@ export function ImportForm() {
         </a>
 
         <form onSubmit={onSubmit} className="mt-4 space-y-3">
+          <label className="block text-sm font-medium">
+            {t("import.brokerLabel")}
+            <select
+              value={broker}
+              onChange={(e) => setBroker(e.target.value as BrokerId)}
+              className="ui-input mt-1.5"
+            >
+              {BROKER_OPTIONS.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              {t("import.brokerHint")}
+            </p>
+          </label>
+
           <label className="block text-sm font-medium">
             {t("import.fileLabel")}
             <input

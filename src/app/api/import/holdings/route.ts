@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { isAuthError, requireUserId } from "@/lib/auth-utils";
+import { isBrokerId } from "@/lib/import-brokers";
 import { parseHoldingsCsv } from "@/lib/import-csv";
 import { normalizeSymbol } from "@/lib/types";
 import type { Market } from "@/lib/types";
@@ -15,8 +16,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "file is required" }, { status: 400 });
   }
 
+  const brokerRaw = form.get("broker");
+  const brokerStr = String(brokerRaw ?? "");
+  const broker = isBrokerId(brokerStr) ? brokerStr : "generic";
+
   const text = await file.text();
-  const parsed = parseHoldingsCsv(text);
+  const parsed = parseHoldingsCsv(text, broker);
   if (!parsed.ok) {
     return NextResponse.json({ errors: parsed.errors }, { status: 400 });
   }

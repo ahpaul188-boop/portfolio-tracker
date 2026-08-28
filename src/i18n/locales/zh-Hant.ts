@@ -74,6 +74,8 @@ export const zhHant: Messages = {
     empty: "新增有即時報價的持倉以查看表現。",
     failed: "無法載入表現圖表",
     approximate: "估算值：目前持股數 × 歷史價格。債券使用手動標價。",
+    trades: "根據買賣記錄計算各日持股數量。債券使用手動標價。",
+    snapshots: "結合每日投資組合快照與基於交易的估算。",
   },
   bondReminders: {
     title: "即將到期的債券事項",
@@ -108,6 +110,8 @@ export const zhHant: Messages = {
     triggeredTitle: "價格提醒已觸發",
     invalidPrice: "請輸入有效價格",
     saveFailed: "無法儲存提醒",
+    notificationTitle: "價格提醒",
+    notificationBody: "{name}（{symbol}）{direction} {price}",
   },
   settings: {
     title: "設定",
@@ -121,10 +125,16 @@ export const zhHant: Messages = {
     saved: "設定已儲存",
     saveFailed: "無法儲存設定",
     loadFailed: "無法載入設定",
+    browserNotifyAlerts: "價格提醒瀏覽器通知",
+    browserNotifyHint: "應用開啟時每分鐘檢查一次。請在提示時允許瀏覽器通知權限。",
+    browserNotifyDenied: "瀏覽器通知已被封鎖",
+    browserNotifyUnsupported: "此瀏覽器不支援通知",
   },
   import: {
     title: "匯入持倉",
     hint: "上傳 CSV 批量新增持倉。已存在的代號會略過。",
+    brokerLabel: "券商格式",
+    brokerHint: "選擇券商匯出格式，或選擇 Generic 使用範本 CSV。",
     downloadTemplate: "下載 CSV 範本",
     fileLabel: "CSV 檔案",
     upload: "匯入",
@@ -280,6 +290,7 @@ export const zhHant: Messages = {
     errorAccessDenied:
       "Google 拒絕登入。若應用程式處於 Testing 模式，請在 OAuth 同意畫面 → Test users 新增您的 Gmail。",
     errorCredentials: "電郵無效。請輸入有效地址（例如 you@gmail.com）。",
+    errorStaleSession: "資料庫更新後您的工作階段已過期，請重新登入。",
     errorDefault: "登入失敗（{code}）。請嘗試以電郵登入。",
   },
 };

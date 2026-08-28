@@ -1,7 +1,6 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import { HoldingForm } from "@/components/HoldingForm";
 import { SearchBox } from "@/components/SearchBox";
+import { requireUserIdForPage } from "@/lib/auth-utils";
 import type { AssetType, Market } from "@/lib/types";
 
 type Props = {
@@ -14,8 +13,7 @@ function one(v: string | string[] | undefined): string {
 }
 
 export default async function NewHoldingPage({ searchParams }: Props) {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  await requireUserIdForPage();
 
   const sp = await searchParams;
   const assetType = (one(sp.assetType) as AssetType) || "Stock";

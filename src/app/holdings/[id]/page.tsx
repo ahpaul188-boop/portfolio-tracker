@@ -1,9 +1,8 @@
-import { auth } from "@/auth";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { HoldingForm } from "@/components/HoldingForm";
 import { StockChart } from "@/components/StockChart";
 import { TradePanel } from "@/components/TradePanel";
-import { getUserHolding } from "@/lib/auth-utils";
+import { getUserHolding, requireUserIdForPage } from "@/lib/auth-utils";
 import { ensureOpeningTrade } from "@/lib/holdings-sync";
 import type { Market } from "@/lib/types";
 
@@ -14,16 +13,15 @@ type Props = {
 export const dynamic = "force-dynamic";
 
 export default async function EditHoldingPage({ params }: Props) {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  const userId = await requireUserIdForPage();
 
   const { id } = await params;
-  let holding = await getUserHolding(id, session.user.id);
+  let holding = await getUserHolding(id, userId);
   if (!holding) notFound();
 
   if (holding.transactions.length === 0 && holding.quantity > 0) {
     await ensureOpeningTrade(id);
-    holding = await getUserHolding(id, session.user.id);
+    holding = await getUserHolding(id, userId);
     if (!holding) notFound();
   }
 

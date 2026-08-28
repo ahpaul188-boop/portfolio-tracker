@@ -4,9 +4,12 @@ import {
   type HistoryPoint,
   type HistoryRange,
 } from "@/lib/quotes";
+import { quantityHeldOnOrBefore, type TradeRow } from "@/lib/ledger";
 import type { Market } from "@/lib/types";
 
 export type PerformancePoint = { t: number; value: number };
+
+export type PerformanceMethod = "trades" | "approximate";
 
 export type HoldingForPerformance = {
   assetType: string;
@@ -15,6 +18,7 @@ export type HoldingForPerformance = {
   quantity: number;
   manualPrice: number | null;
   currency: string;
+  trades?: TradeRow[];
 };
 
 function priceAt(points: HistoryPoint[], ts: number): number | null {
@@ -32,11 +36,30 @@ function priceAt(points: HistoryPoint[], ts: number): number | null {
   return points[lo].close;
 }
 
+function quantityAt(holding: HoldingForPerformance, ts: number): number {
+  if (holding.trades?.length) {
+    return quantityHeldOnOrBefore(holding.trades, new Date(ts));
+  }
+  return holding.quantity;
+}
+
 export async function computePortfolioPerformance(
   holdings: HoldingForPerformance[],
   range: HistoryRange
-): Promise<Record<string, PerformancePoint[]>> {
-  const active = holdings.filter((h) => h.quantity > 0);
+): Promise<{
+  series: Record<string, PerformancePoint[]>;
+  method: PerformanceMethod;
+}> {
+  const usesTrades = holdings.some((h) => (h.trades?.length ?? 0) > 0);
+  const method: PerformanceMethod = usesTrades ? "trades" : "approximate";
+
+  const active = holdings.filter((h) => {
+    if (h.trades?.length) {
+      return h.trades.some((t) => t.side === "Buy");
+    }
+    return h.quantity > 0;
+  });
+
   const stocks = active.filter((h) => h.assetType === "Stock");
   const bonds = active.filter((h) => h.assetType === "Bond");
 
@@ -73,21 +96,25 @@ export async function computePortfolioPerformance(
     for (const { holding, points } of histories) {
       const px = priceAt(points, ts);
       if (px == null) continue;
-      addValue(holding.currency, ts, px * holding.quantity);
+      const qty = quantityAt(holding, ts);
+      if (qty <= 0) continue;
+      addValue(holding.currency, ts, px * qty);
     }
 
     for (const bond of bonds) {
+      const qty = quantityAt(bond, ts);
+      if (qty <= 0) continue;
       const unit = bond.manualPrice ?? 0;
-      addValue(bond.currency, ts, unit * bond.quantity);
+      addValue(bond.currency, ts, unit * qty);
     }
   }
 
-  const result: Record<string, PerformancePoint[]> = {};
+  const series: Record<string, PerformancePoint[]> = {};
   for (const [currency, values] of byCurrency) {
-    result[currency] = [...values.entries()]
+    series[currency] = [...values.entries()]
       .sort((a, b) => a[0] - b[0])
       .map(([t, value]) => ({ t, value }));
   }
 
-  return result;
+  return { series, method };
 }

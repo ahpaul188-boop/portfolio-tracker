@@ -36,6 +36,9 @@ export function PortfolioPerformanceChart() {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hover, setHover] = useState<number | null>(null);
+  const [method, setMethod] = useState<"trades" | "approximate" | "snapshots">(
+    "approximate"
+  );
 
   const currencies = Object.keys(series);
   const selected = activeCcy && series[activeCcy] ? activeCcy : currencies[0];
@@ -58,6 +61,7 @@ export function PortfolioPerformanceChart() {
         }
         const next = (data.series ?? {}) as Record<string, SeriesEntry>;
         setSeries(next);
+        setMethod(data.method ?? "approximate");
         const keys = Object.keys(next);
         if (keys.length && !keys.includes(activeCcy)) {
           setActiveCcy(keys[0]);
@@ -229,7 +233,11 @@ export function PortfolioPerformanceChart() {
       )}
 
       <p className="mt-1 text-[9px] text-[var(--muted)]">
-        {t("performance.approximate")}
+        {method === "snapshots"
+          ? t("performance.snapshots")
+          : method === "trades"
+            ? t("performance.trades")
+            : t("performance.approximate")}
       </p>
     </section>
   );

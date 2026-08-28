@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import { PortfolioDashboard } from "@/components/PortfolioDashboard";
 import { prisma } from "@/lib/db";
+import { requireUserIdForPage } from "@/lib/auth-utils";
 import { getBondReminders } from "@/lib/bond-reminders";
 import { getFxRates } from "@/lib/fx";
 import { getUserPreferences } from "@/lib/user-preferences";
@@ -13,9 +13,8 @@ import type { Market } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const userId = await requireUserIdForPage();
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-  const userId = session.user.id;
 
   let holdings = await prisma.holding.findMany({
     where: { userId },
@@ -110,7 +109,7 @@ export default async function HomePage() {
       holdings={enriched}
       summary={summary}
       holdingCount={holdings.length}
-      userName={session.user.name}
+      userName={session?.user?.name}
       bondReminders={bondReminders}
       displayCurrency={prefs.displayCurrency}
       fxRates={fxRates}

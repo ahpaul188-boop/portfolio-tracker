@@ -1,5 +1,9 @@
 import { normalizeSymbol, validateHolding, type HoldingInput } from "@/lib/types";
 import type { Market } from "@/lib/types";
+import {
+  normalizeBrokerCsv,
+  type BrokerId,
+} from "@/lib/import-brokers";
 
 export const IMPORT_HEADERS = [
   "assetType",
@@ -58,8 +62,12 @@ export type ImportParseResult =
   | { ok: true; rows: ParsedImportRow[] }
   | { ok: false; errors: string[] };
 
-export function parseHoldingsCsv(text: string): ImportParseResult {
-  const lines = text
+export function parseHoldingsCsv(
+  text: string,
+  broker: BrokerId = "generic"
+): ImportParseResult {
+  const normalized = normalizeBrokerCsv(text, broker);
+  const lines = normalized
     .replace(/^\uFEFF/, "")
     .split(/\r?\n/)
     .map((l) => l.trim())

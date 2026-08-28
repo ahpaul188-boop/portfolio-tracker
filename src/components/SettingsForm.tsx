@@ -8,6 +8,7 @@ export function SettingsForm() {
   const { t } = useI18n();
   const [displayCurrency, setDisplayCurrency] = useState("USD");
   const [openrouterModel, setOpenrouterModel] = useState("");
+  const [browserNotifyAlerts, setBrowserNotifyAlerts] = useState(false);
   const [aiConfigured, setAiConfigured] = useState(false);
   const [busy, setBusy] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -20,11 +21,38 @@ export function SettingsForm() {
       .then((d) => {
         setDisplayCurrency(d.displayCurrency ?? "USD");
         setOpenrouterModel(d.openrouterModel ?? "");
+        setBrowserNotifyAlerts(!!d.browserNotifyAlerts);
         setAiConfigured(!!d.openrouterConfigured);
       })
       .catch(() => setError(t("settings.loadFailed")))
       .finally(() => setBusy(false));
   }, [t]);
+
+  async function requestNotificationPermission() {
+    if (typeof Notification === "undefined") {
+      setError(t("settings.browserNotifyUnsupported"));
+      return false;
+    }
+    if (Notification.permission === "granted") return true;
+    if (Notification.permission === "denied") {
+      setError(t("settings.browserNotifyDenied"));
+      return false;
+    }
+    const result = await Notification.requestPermission();
+    if (result !== "granted") {
+      setError(t("settings.browserNotifyDenied"));
+      return false;
+    }
+    return true;
+  }
+
+  async function onNotifyToggle(checked: boolean) {
+    if (checked) {
+      const ok = await requestNotificationPermission();
+      if (!ok) return;
+    }
+    setBrowserNotifyAlerts(checked);
+  }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -38,6 +66,7 @@ export function SettingsForm() {
         body: JSON.stringify({
           displayCurrency,
           openrouterModel: openrouterModel || null,
+          browserNotifyAlerts,
         }),
       });
       const data = await res.json();
@@ -81,6 +110,21 @@ export function SettingsForm() {
         <p className="mt-1 text-xs text-[var(--muted)]">
           {t("settings.displayCurrencyHint")}
         </p>
+      </label>
+
+      <label className="flex items-start gap-2 text-sm font-medium">
+        <input
+          type="checkbox"
+          checked={browserNotifyAlerts}
+          onChange={(e) => onNotifyToggle(e.target.checked)}
+          className="mt-1"
+        />
+        <span>
+          {t("settings.browserNotifyAlerts")}
+          <p className="mt-0.5 text-xs font-normal text-[var(--muted)]">
+            {t("settings.browserNotifyHint")}
+          </p>
+        </span>
       </label>
 
       {aiConfigured && (

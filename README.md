@@ -186,9 +186,11 @@ prisma/
 - [x] Mobile-optimized layout (card watchlist, bottom nav, touch targets)
 - [x] OpenRouter model selection in Settings (`/settings`)
 
-### Phase 6 — Future ideas (backlog)
+### Phase 6 — Advanced features (done)
 
-- [ ] Email/push notifications for price alerts
-- [ ] Broker-specific CSV import mappings
-- [ ] Portfolio snapshots for accurate historical performance
+- [x] Browser notifications for price alerts (Settings toggle, polls while app is open)
+- [x] Broker-specific CSV import mappings (Interactive Brokers, Futu / Moomoo)
+- [x] Portfolio snapshots for historical performance (daily upsert on chart load)
+- [x] Transaction-aware performance chart (uses buy/sell ledger when available)
+- [ ] Email notifications for price alerts (requires external email service)
 - [ ] Multi-user household / shared portfolios

@@ -9,7 +9,11 @@ import {
 } from "@/i18n/server";
 
 type Props = {
-  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
+  searchParams: Promise<{
+    callbackUrl?: string;
+    error?: string;
+    reason?: string;
+  }>;
 };
 
 function errorMessage(
@@ -35,7 +39,9 @@ export default async function LoginPage({ searchParams }: Props) {
   const locale = await getLocale();
   const dict = getDictionary(locale);
   const t = createTranslator(dict);
-  const error = errorMessage(sp.error, t);
+  const error =
+    errorMessage(sp.error, t) ??
+    (sp.reason === "stale-session" ? t("login.errorStaleSession") : null);
   const showEmailLogin = !googleConfigured;
 
   return (

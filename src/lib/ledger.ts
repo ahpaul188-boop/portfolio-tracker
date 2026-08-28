@@ -87,6 +87,22 @@ export function computePosition(trades: TradeRow[]): PositionSnapshot {
   return { quantity, avgCost, totalCost, firstBuyDate };
 }
 
+/** Shares held at the end of an inclusive UTC day (includes trades on that day). */
+export function quantityHeldOnOrBefore(
+  trades: TradeRow[],
+  asOfInclusive: Date
+): number {
+  const cutoff = startOfUtcDay(asOfInclusive);
+  let quantity = 0;
+  for (const t of sortTrades(trades)) {
+    const day = startOfUtcDay(toDate(t.tradeDate));
+    if (day > cutoff) break;
+    if (t.side === "Buy") quantity += t.quantity;
+    else quantity -= t.quantity;
+  }
+  return Math.max(0, quantity);
+}
+
 /** Shares held at the open of an ex-dividend day (trades strictly before that day). */
 export function quantityHeldBefore(
   trades: TradeRow[],
