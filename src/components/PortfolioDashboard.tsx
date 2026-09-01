@@ -12,10 +12,14 @@ import { SearchBox } from "@/components/SearchBox";
 import { SummaryCards } from "@/components/SummaryCards";
 import { useI18n } from "@/components/LocaleProvider";
 import { BondRemindersPanel } from "@/components/BondRemindersPanel";
+import { AllocationCharts } from "@/components/AllocationCharts";
+import { RealizedPnlPanel } from "@/components/RealizedPnlPanel";
 import type { FxRates } from "@/lib/fx";
 import type { BondReminder } from "@/lib/bond-reminders";
 import type { NewsItem } from "@/lib/news";
 import type { EnrichedHolding, PortfolioSummary } from "@/lib/portfolio";
+import type { AllocationBundle } from "@/lib/portfolio-allocation";
+import type { RealizedSummary } from "@/lib/realized-pnl";
 import type { DisplayCurrency } from "@/lib/user-preferences";
 
 type Props = {
@@ -28,6 +32,8 @@ type Props = {
   bondReminders?: BondReminder[];
   displayCurrency?: DisplayCurrency;
   fxRates?: FxRates | null;
+  allocation?: AllocationBundle | null;
+  realized?: RealizedSummary | null;
 };
 
 export function PortfolioDashboard({
@@ -40,6 +46,8 @@ export function PortfolioDashboard({
   bondReminders = [],
   displayCurrency = "USD",
   fxRates = null,
+  allocation = null,
+  realized = null,
 }: Props) {
   const { t } = useI18n();
 
@@ -57,6 +65,13 @@ export function PortfolioDashboard({
       <PriceAlertsBanner />
 
       <PortfolioPerformanceChart />
+
+      {(allocation || realized) && (
+        <div className="grid gap-2.5 lg:grid-cols-2">
+          {allocation && <AllocationCharts data={allocation} />}
+          {realized && <RealizedPnlPanel data={realized} />}
+        </div>
+      )}
 
       {bondReminders.length > 0 && (
         <BondRemindersPanel reminders={bondReminders} />

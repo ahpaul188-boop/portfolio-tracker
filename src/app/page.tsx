@@ -6,6 +6,11 @@ import { getBondReminders } from "@/lib/bond-reminders";
 import { getFxRates } from "@/lib/fx";
 import { getUserPreferences } from "@/lib/user-preferences";
 import { ensureOpeningTrade, tradesToRows } from "@/lib/holdings-sync";
+import { computeAllocationBundle } from "@/lib/portfolio-allocation";
+import {
+  buildRealizedSummary,
+  computeRealizedSales,
+} from "@/lib/realized-pnl";
 import { enrichHoldings, summarize } from "@/lib/portfolio";
 import { getQuotes, yahooSymbol } from "@/lib/quotes";
 import type { Market } from "@/lib/types";
@@ -104,6 +109,31 @@ export default async function HomePage() {
     }))
   );
 
+  const displayCurrency = prefs.displayCurrency;
+  const rates = fxRates?.rates ?? { USD: 1, HKD: 1 };
+
+  const allocation = computeAllocationBundle(
+    enriched,
+    displayCurrency,
+    rates
+  );
+
+  const realizedSales = computeRealizedSales(
+    holdings.map((h) => ({
+      id: h.id,
+      symbol: h.symbol,
+      name: h.name,
+      market: h.market,
+      currency: h.currency,
+      trades: tradesByHolding[h.id] ?? [],
+    }))
+  );
+  const realized = buildRealizedSummary(
+    realizedSales,
+    displayCurrency,
+    rates
+  );
+
   return (
     <PortfolioDashboard
       holdings={enriched}
@@ -111,8 +141,10 @@ export default async function HomePage() {
       holdingCount={holdings.length}
       userName={session?.user?.name}
       bondReminders={bondReminders}
-      displayCurrency={prefs.displayCurrency}
+      displayCurrency={displayCurrency}
       fxRates={fxRates}
+      allocation={allocation}
+      realized={realized}
     />
   );
 }

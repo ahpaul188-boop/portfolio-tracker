@@ -79,6 +79,33 @@ export const en = {
     snapshots:
       "Blends daily portfolio snapshots with trade-based estimates where available.",
   },
+  allocation: {
+    title: "Allocation",
+    hint: "Portfolio mix in your display currency — hover slices for details",
+    byMarket: "Market",
+    byAssetType: "Asset type",
+    topHoldings: "Top holdings",
+    concentration: "Concentration",
+    other: "Other",
+    concentrationWarning: "One or more positions exceed 20% of portfolio value.",
+  },
+  realized: {
+    title: "Realized P&L",
+    hint: "Gain or loss from completed sell trades (average-cost method)",
+    empty: "No sell trades yet. Realized P&L appears when you record sales.",
+    allTime: "All time",
+    taxYear: "Selected year",
+    taxYearLabel: "Tax year {year}",
+    ytd: "YTD",
+    date: "Date",
+    symbol: "Symbol",
+    qty: "Qty",
+    costBasis: "Avg cost",
+    proceeds: "Proceeds",
+    pnl: "Realized P&L",
+    disclaimer:
+      "Educational estimate using average cost. Not tax advice — consult a professional.",
+  },
   bondReminders: {
     title: "Upcoming bond events",
     hint: "Maturities and coupon dates in the next 90 days",
